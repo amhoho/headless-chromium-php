@@ -14,13 +14,7 @@ ln -s /etc/alternatives/google-chrome /usr/bin/chrome
 chmod -R 777 /usr/bin/chrome
 ```
 
-2.也支持chromedriver(推荐):
-```
-前往页面https://sites.google.com/a/chromium.org/chromedriver/downloads下载并上传为/usr/bin/chromedriver
-chmod -R 777 /usr/bin/chromedriver
-```
-
-3.中文字体支持和flash
+2.中文字体支持和flash
 ```
 字体:
 yum -y install *-fonts-*
@@ -28,9 +22,9 @@ yum -y install http://linuxdownload.adobe.com/linux/x86_64/adobe-release-x86_64-
 yum install flash-plugin
 ```
 
-4.php7+(各有各法,就不举例了)
+3.php7+(各有各法,就不举例了)
 
-5.安装
+4.安装
 ```
 composer require chrome-php/chrome
 ```
@@ -62,9 +56,11 @@ use HeadlessChromium\Exception\NavigationExpired;
 //Cookie操作
 use HeadlessChromium\Cookies\Cookie;
 //默认chrome浏览器
- $browserFactory = new BrowserFactory();
- //或使用chromium,对应usr/bin/chromium
- $browserFactory = new BrowserFactory('chromium');
+$browserFactory = new BrowserFactory();
+
+//或使用chromium,对应usr/bin/chromium
+$browserFactory = new BrowserFactory('chromium');
+
 //设置项支持enableImages,windowSize,userAgent,userDataDir,proxy
 $browser_option=[
         'enableImages'=> false, //禁止图像,可加速
@@ -81,8 +77,6 @@ $browser = $browserFactory->createBrowser();
 
 //打开标签页
 $page = $browser->createPage();
-
-//启动导航
 $navigation = $page->navigate('https://test.com');
 
 //等待导航的加载完成
@@ -111,11 +105,7 @@ $evaluation = $page->evaluate(
 $evaluation->waitForPageReload();
 $value = $page->evaluate('document.querySelector("#value").innerHTML')->getReturnValue();
 
-//eval一个js的[
-        'headless'        => false,         // disable headless mode
-        'connectionDelay' => 0.8,           // add 0.8 second of delay between each instruction sent to chrome,
-        'debugLogger'     => 'php://stdout' // will enable verbose mode
-    ]function并传参
+//eval一个js的function并传参
     $evaluation = $page->callFunction(
       'function(a, b) {
           window.foo = a + b;
@@ -159,17 +149,11 @@ $page->setCookies([Cookie::create('name', 'value', ['expires'])])->await();
 //获得当前页面的Cookie
 $cookies = $page->getCookies();
 
-//按名称内含的关键词筛选cookie
+//按名称里含有`name`筛选cookie
 $cookiesFoo = $cookies->filterBy('name', 'foo'); 
 
-//按名称起始筛选Cookie
+//按名称==`name`筛选Cookie
 $cookieBar = $cookies->findOneBy('name', 'bar');
-
-//除了BrowserFactory中设置,还可以动态设置UA.
-$page->setUserAgent('my user agent');
-
-//关闭浏览器
-$browser->close();
 
 //鼠标操作
 $page->mouse()
@@ -180,8 +164,13 @@ $page->mouse()
 //点击完成后等待加载
 $page->waitForReload();
 
-//不常用的高级项
+//关闭浏览器
+$browser->close();
 
+//####不常用的高级项
+
+//除了BrowserFactory中设置,还可以动态设置UA.
+$page->setUserAgent('my user agent');
 
 //与devtools调试器进行通信
 use HeadlessChromium\Communication\Connection;
