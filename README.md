@@ -81,9 +81,10 @@ $navigation = $page->navigate('https://test.com');
 
 //等待导航的加载完成
 try {
+$navigation->waitForNavigation();//默认写法
 //10000表示状态完成后等待10秒
  $navigation->waitForNavigation(Page::DOM_CONTENT_LOADED, 10000)//dom初始化完成
-$navigation->waitForNavigation(Page::LOAD,10000);//默认,页面资源初始化完成
+$navigation->waitForNavigation(Page::LOAD,10000);//上文默认,页面资源初始化完成
  $navigation->waitForNavigation(Page::NETWORK_IDLE, 10000)//页面资源初始化完成并在最后一次网络请求已停止500ms后
 } catch (OperationTimedOut $e) {
 //超时无响应状态处理...
