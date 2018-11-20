@@ -37,7 +37,7 @@ composer require chrome-php/chrome
 
 ### 测试代码:(生成test.png截图即成功)
 
-```
+```php
 <?php
 require_once('vendor/autoload.php');
 use HeadlessChromium\BrowserFactory;
@@ -52,7 +52,7 @@ $browser->close();
 
 ### API代码解释:
 
-```
+```php
 <?php
 require_once('vendor/autoload.php');
 use HeadlessChromium\BrowserFactory;
