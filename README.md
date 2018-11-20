@@ -4,7 +4,7 @@
 
 2018-11-20 18:25
 
-1.$browser_option不再使用原作者固定的设置项,而是使用了chrome的官方参数(更灵活强大).
+1.$browser_option进行了修改(支持proxy,对设置项进行了精简)
 
 ### 使用(linux平台):
 1.chrome安装:
@@ -65,25 +65,26 @@ use HeadlessChromium\Cookies\Cookie;
  $browserFactory = new BrowserFactory();
  //或使用chromium,对应usr/bin/chromium
  $browserFactory = new BrowserFactory('chromium');
+//设置项支持enableImages,windowSize,userAgent,userDataDir,proxy
 $browser_option=[
-'--disable-extensions',
-'--start-maximized',
-'--disable-infobars',
-'--disable-gpu',
-'--no-sandbox',
-'--lang=zh-CN',
-'--headless',
-'--blink-settings=imagesEnabled=false',
-'--window-size=1920,6000',
-'--disable-dev-shm-usage'
-];
-  $browser = $browserFactory->createBrowser($browser_option);
+        'enableImages'=> false, //禁止图像,可加速
+        'windowSize'=>[1920, 1000],//窗口尺寸
+        'userAgent'=>'Your UA',//例如设为手机浏览器
+        'userDataDir'=>'/path/',//如果往页面调试跨域js等信息必须.随便空目录路径
+        'proxy'=>'127.0.0.1:8000'//代理ip:端口
+    ]
+    
+$browser = $browserFactory->createBrowser($browser_option);
+
 //启动浏览器
 $browser = $browserFactory->createBrowser();
+
 //打开标签页
 $page = $browser->createPage();
+
 //启动导航
 $navigation = $page->navigate('https://test.com');
+
 //等待导航的加载完成
 try {
 //10000表示状态完成后等待10秒
@@ -110,7 +111,11 @@ $evaluation = $page->evaluate(
 $evaluation->waitForPageReload();
 $value = $page->evaluate('document.querySelector("#value").innerHTML')->getReturnValue();
 
-//eval 一个function
+//eval一个js的[
+        'headless'        => false,         // disable headless mode
+        'connectionDelay' => 0.8,           // add 0.8 second of delay between each instruction sent to chrome,
+        'debugLogger'     => 'php://stdout' // will enable verbose mode
+    ]function并传参
     $evaluation = $page->callFunction(
       'function(a, b) {
           window.foo = a + b;
@@ -142,6 +147,30 @@ $page->screenshot()->ssaveToFile('./test.png');
 //局部截图(坐标大小x,y,width,height)
 $page->screenshot(0,0,100,100)->ssaveToFile('./test.png');
 
+//创建指定域名的Cookie
+$page->setCookies([Cookie::create('name', 'value', ['domain' => 'example.com','expires' => time() + 3600])])->await();
+
+//创建当前页面的Cookie
+$page->setCookies([Cookie::create('name', 'value', ['expires'])])->await();
+
+//获得浏览器所有的Cookie
+ $cookies = $page->getAllCookies();
+ 
+//获得当前页面的Cookie
+$cookies = $page->getCookies();
+
+//按名称内含的关键词筛选cookie
+$cookiesFoo = $cookies->filterBy('name', 'foo'); 
+
+//按名称起始筛选Cookie
+$cookieBar = $cookies->findOneBy('name', 'bar');
+
+//除了BrowserFactory中设置,还可以动态设置UA.
+$page->setUserAgent('my user agent');
+
+//关闭浏览器
+$browser->close();
+
 //鼠标操作
 $page->mouse()
 ->move(10, 20)//移动鼠标到x=10,y=20
@@ -151,20 +180,8 @@ $page->mouse()
 //点击完成后等待加载
 $page->waitForReload();
 
-//创建指定域名的Cookie
-$page->setCookies([Cookie::create('name', 'value', ['domain' => 'example.com','expires' => time() + 3600])])->await();
-//创建当前页面的Cookie
-$page->setCookies([Cookie::create('name', 'value', ['expires'])])->await();
-//获得浏览器所有的Cookie
- $cookies = $page->getAllCookies();
- //获得当前页面的Cookie
-  $cookies = $page->getCookies();
-//按名称内含的关键词筛选cookie
-$cookiesFoo = $cookies->filterBy('name', 'foo'); 
-//按名称起始筛选Cookie
-$cookieBar = $cookies->findOneBy('name', 'bar');
-//除了BrowserFactory中设置,还可以动态设置UA.
-$page->setUserAgent('my user agent');
+//不常用的高级项
+
 
 //与devtools调试器进行通信
 use HeadlessChromium\Communication\Connection;
@@ -192,7 +209,7 @@ $webSocketUri = 'ws://127.0.0.1:9222/devtools/browser/xxx';
 $connection = new Connection($webSocketUri);
 $connection->connect();
 $browser = new Browser($connection);
-//关闭浏览器
-$browser->close();
+
+
 
 ```
