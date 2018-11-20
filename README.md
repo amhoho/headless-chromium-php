@@ -1,6 +1,9 @@
-本项目为chrome-php/headless-chromium-php的中文分支,
+本项目为chrome-php/headless-chromium-php的中文分支
+
 ### 修改:
+
 2018-11-20 18:25
+
 1.$browser_option不再使用原作者固定的设置项,而是使用了chrome的官方参数(更灵活强大).
 
 ### 使用(linux平台):
@@ -10,11 +13,13 @@ yum install https://dl.google.com/linux/direct/google-chrome-stable_current_x86_
 ln -s /etc/alternatives/google-chrome /usr/bin/chrome
 chmod -R 777 /usr/bin/chrome
 ```
+
 2.也支持chromedriver(推荐):
 ```
 前往页面https://sites.google.com/a/chromium.org/chromedriver/downloads下载并上传为/usr/bin/chromedriver
 chmod -R 777 /usr/bin/chromedriver
 ```
+
 3.中文字体支持和flash
 ```
 字体:
@@ -22,13 +27,16 @@ yum -y install *-fonts-*
 yum -y install http://linuxdownload.adobe.com/linux/x86_64/adobe-release-x86_64-1.0-1.noarch.rpm
 yum install flash-plugin
 ```
+
 4.php7+(各有各法,就不举例了)
+
 5.安装
 ```
 composer require chrome-php/chrome
 ```
 
 ### 测试代码:(生成test.png截图即成功)
+
 ```
 <?php
 require_once('vendor/autoload.php');
@@ -43,6 +51,7 @@ $browser->close();
 ```
 
 ### API代码解释:
+
 ```
 <?php
 require_once('vendor/autoload.php');
