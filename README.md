@@ -132,10 +132,10 @@ $page->addPreScript($script, ['onLoad' => true]);
 $page->setViewportSize(1024,968)->await();
 
 //整页截图
-$page->screenshot()->ssaveToFile('./test.png');
+$page->screenshot()->saveToFile('./test.png');
 
 //局部截图(坐标大小x,y,width,height)
-$page->screenshot(0,0,100,100)->ssaveToFile('./test.png');
+$page->screenshot(0,0,100,100)->saveToFile('./test.png');
 
 //创建指定域名的Cookie
 $page->setCookies([Cookie::create('name', 'value', ['domain' => 'example.com','expires' => time() + 3600])])->await();
