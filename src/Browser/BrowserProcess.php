@@ -274,10 +274,8 @@ class BrowserProcess implements LoggerAwareInterface
         // command line args to add to start chrome (inspired by puppeteer configs)
         // see https://peter.sh/experiments/chromium-command-line-switches/
         $args = [
-            // auto debug port
+        '--no-default-browser-check',
             '--remote-debugging-port=0',
-
-            // disable undesired features
             '--disable-background-networking',
             '--disable-background-timer-throttling',
             '--disable-client-side-phishing-detection',
@@ -289,24 +287,26 @@ class BrowserProcess implements LoggerAwareInterface
             '--disable-sync',
             '--disable-translate',
             '--metrics-recording-only',
-            '--no-first-run',
             '--safebrowsing-disable-auto-update',
-
-            // automation mode
             '--enable-automation',
-
-            // password settings
             '--password-store=basic',
-            '--use-mock-keychain', // osX only
-        ];
-
-        // enable headless mode
-        if (!array_key_exists('headless', $options) || $options['headless']) {
-            $args[] = '--headless';
-            $args[] = '--disable-gpu';
-            $args[] = '--hide-scrollbars';
-            $args[] = '--mute-audio';
-        }
+            '--use-mock-keychain',
+            '--no-sandbox',
+             '--headless',
+            '--disable-gpu',
+             '--hide-scrollbars',
+             '--mute-audio',
+              '--ignore-certificate-errors',
+              '--remote-debugging-port=9222',
+              '--homepage=about:blank',
+              '--no-first-run',
+                '--no-default-browser-check',
+            '--allow-insecure-localhost',
+              '--disable-web-security',
+            '--disable-plugins',
+            '--disable-renderer-backgrounding',
+            '--disable-device-discovery-notifications'
+];
 
         // disable loading of images (currently can't be done via devtools, only CLI)
         if (array_key_exists('enableImages', $options) && ($options['enableImages'] === false)) {
@@ -328,19 +328,9 @@ class BrowserProcess implements LoggerAwareInterface
             $args[] = '--window-size=' . implode(',', $options['windowSize']) ;
         }
 
-        // sandbox mode - useful if you want to use chrome headless inside docker
-        if (array_key_exists('noSandbox', $options) && $options['noSandbox']) {
-            $args[] = '--no-sandbox';
-        }
-
         // user agent
         if (array_key_exists('userAgent', $options)) {
             $args[] = '--user-agent=' . escapeshellarg($options['userAgent']);
-        }
-
-        // ignore certificate errors
-        if (array_key_exists('ignoreCertificateErrors', $options) && $options['ignoreCertificateErrors']) {
-            $args[] = '--ignore-certificate-errors';
         }
 
         // add custom flags
@@ -350,6 +340,10 @@ class BrowserProcess implements LoggerAwareInterface
 
         // add user data dir to args
         $args[] = '--user-data-dir=' . $options['userDataDir'];
+        // user proxy
+        if (array_key_exists('proxy', $options)) {
+            $args[] = '--proxy-server=' . escapeshellarg($options['proxy']);
+        }
 
         return $args;
     }
