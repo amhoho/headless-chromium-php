@@ -305,7 +305,10 @@ class BrowserProcess implements LoggerAwareInterface
               '--disable-web-security',
             '--disable-plugins',
             '--disable-renderer-backgrounding',
-            '--disable-device-discovery-notifications'
+            '--disable-device-discovery-notifications',
+            '--disable-infobars',
+            '--disable-dev-shm-usage',
+            '--lang=zh-CN'
 ];
 
         // disable loading of images (currently can't be done via devtools, only CLI)
